@@ -1,243 +1,154 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  const [output, setOutput] = useState('');
+  // State hooks for handling inputs and results for different functionalities
+  const [input, setInput] = useState('');
+  const [result, setResult] = useState(null);
 
-  const printNumbers = () => {
-    let result = '';
-    for (let i = 1; i <= 10; i++) {
-      result += `${i} `;
-    }
-    setOutput(result);
-  };
+  // Utility Functions
+  const distinctArray = (arr) => [...new Set(arr)];
 
-  const printOddNumbers = () => {
-    let result = '';
-    for (let i = 1; i < 100; i += 2) {
-      result += `${i} `;
-    }
-    setOutput(result);
-  };
-
-  const printMultiplicationTable = () => {
-    let result = '';
-    const number = 7;
-    for (let i = 1; i <= 10; i++) {
-      result += `${number} x ${i} = ${number * i}\n`;
-    }
-    setOutput(result);
-  };
-
-  const printAllMultiplicationTables = () => {
-    let result = '';
-    for (let i = 1; i <= 10; i++) {
-      result += `Multiplication table for ${i}:\n`;
-      for (let j = 1; j <= 10; j++) {
-        result += `${i} x ${j} = ${i * j}\n`;
+  const first100PrimesSum = () => {
+    const isPrime = (num) => {
+      if (num < 2) return false;
+      for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) return false;
       }
-      result += '\n'; // Print a blank line between tables
-    }
-    setOutput(result);
-  };
-
-  const calculateSum = () => {
-    let sum = 0;
-    for (let i = 1; i <= 10; i++) {
-      sum += i;
-    }
-    setOutput(`Sum of numbers from 1 to 10 is ${sum}`);
-  };
-
-  const calculateFactorial = () => {
-    const factorial = (n) => {
-      if (n === 0) return 1;
-      return n * factorial(n - 1);
+      return true;
     };
-
-    setOutput(`10! is ${factorial(10)}`);
-  };
-
-  const sumEvenNumbers = () => {
-    let sum = 0;
-    for (let i = 12; i < 30; i += 2) {
-      sum += i;
-    }
-    setOutput(`Sum of even numbers between 10 and 30 is ${sum}`);
-  };
-
-  const celsiusToFahrenheit = (celsius) => {
-    return (celsius * 9 / 5) + 32;
-  };
-
-  const fahrenheitToCelsius = (fahrenheit) => {
-    return (fahrenheit - 32) * 5 / 9;
-  };
-
-  const sumArray = (arr) => {
-    return arr.reduce((acc, curr) => acc + curr, 0);
-  };
-
-  const averageArray = (arr) => {
-    return sumArray(arr) / arr.length;
-  };
-
-  const filterPositiveNumbers = (arr) => {
-    return arr.filter(num => num > 0);
-  };
-
-  const findMax = (arr) => {
-    return Math.max(...arr);
-  };
-
-  const printFibonacci = () => {
-    const fib = [0, 1];
-    while (fib.length < 10) {
-      const next = fib[fib.length - 1] + fib[fib.length - 2];
-      fib.push(next);
-    }
-    return fib;
-  };
-
-  const fibonacci = (n) => {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-  };
-
-  const isPrime = (num) => {
-    if (num <= 1) return false;
-    if (num <= 3) return true;
-    if (num % 2 === 0 || num % 3 === 0) return false;
-    for (let i = 5; i * i <= num; i += 6) {
-      if (num % i === 0 || num % (i + 2) === 0) return false;
-    }
-    return true;
-  };
-
-  const handleIsPrime = () => {
-    const number = 11;
-    setOutput(`Is ${number} prime? ${isPrime(number)}`);
-  };
-
-  function sumOfDigits(num) {
-    return num.toString().split('').reduce((acc, curr) => acc + Number(curr), 0);
-  }
-
-  const printPrimes = () => {
-    const primes = [];
+    
+    let primes = [];
     let num = 2;
     while (primes.length < 100) {
       if (isPrime(num)) primes.push(num);
       num++;
     }
-    return primes;
+    const sum = primes.reduce((sum, prime) => sum + prime, 0);
+    return [primes, sum];
   };
 
-  const primesGreaterThan = (n, p) => {
-    const primes = [];
-    let num = n + 1;
-    while (primes.length < p) {
-      if (isPrime(num)) primes.push(num);
-      num++;
+  const addLargeNumbers = (num1, num2) => {
+    let result = '';
+    let carry = 0;
+    let i = num1.length - 1;
+    let j = num2.length - 1;
+
+    while (i >= 0 || j >= 0 || carry) {
+      const digit1 = i >= 0 ? +num1[i] : 0;
+      const digit2 = j >= 0 ? +num2[j] : 0;
+      let sum = digit1 + digit2 + carry;
+      carry = Math.floor(sum / 10);
+      result = (sum % 10) + result;
+      i--;
+      j--;
     }
-    return primes;
+
+    return result;
   };
 
-  const rotateLeft = (arr) => {
-    return arr.slice(1).concat(arr[0]);
+  const wordCount = (text) => text.split(/\s+/).filter(Boolean).length;
+
+  const capitalizeWords = (text) => text.replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const sumCommaDelimited = (str) => str.split(',').reduce((sum, num) => sum + parseFloat(num), 0);
+
+  // Handler functions
+  const handleDistinctArray = () => {
+    const arr = input.split(',').map(Number);
+    setResult(distinctArray(arr).join(', '));
   };
 
-  const rotateRight = (arr) => {
-    return [arr[arr.length - 1]].concat(arr.slice(0, -1));
+  const handlePrimeSum = () => {
+    const [primes, sum] = first100PrimesSum();
+    setResult(`First 100 Primes: ${primes.join(', ')} | Sum: ${sum}`);
   };
 
-  const reverseArray = (arr) => {
-    return arr.slice().reverse();
+  const handleLargeAddition = () => {
+    const [num1, num2] = input.split(',').map(str => str.trim());
+    setResult(addLargeNumbers(num1, num2));
   };
 
-
-  const reverseString = (str) => {
-    return str.split('').reverse().join('');
+  const handleWordCount = () => {
+    setResult(wordCount(input));
   };
 
-
-  const mergeArrays = (arr1, arr2) => {
-    return arr1.concat(arr2);
+  const handleCapitalizeWords = () => {
+    setResult(capitalizeWords(input));
   };
 
-  const symmetricDifference = (arr1, arr2) => {
-    return arr1.filter(x => !arr2.includes(x)).concat(arr2.filter(x => !arr1.includes(x)));
-  };
-
-
-  const difference = (arr1, arr2) => {
-    return arr1.filter(x => !arr2.includes(x));
+  const handleCommaSum = () => {
+    setResult(sumCommaDelimited(input));
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-       
-        
-        <div>
-          <button onClick={printNumbers}>Print Numbers 1 to 10</button>
-          <br></br>
+      <h1>JavaScript Function Utilities</h1>
+      
+      <div className="section">
+        <h3>Distinct Array</h3>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter numbers separated by commas"
+        />
+        <button onClick={handleDistinctArray}>Get Distinct Array</button>
+      </div>
 
-          <button onClick={printOddNumbers}>Print Odd Numbers &lt; 100</button>
-          <br></br>
-          <button onClick={printMultiplicationTable}>Print Multiplication Table of 7</button>
-          <br></br>
-          <button onClick={printAllMultiplicationTables}>Print All Multiplication Tables (1 to 10)</button>
-          <br></br>
-          <button onClick={calculateSum}>Calculate Sum of Numbers 1 to 10</button>
-          <br></br>
-          <button onClick={calculateFactorial}>Calculate 10!</button>
-          <br></br>
-          <button onClick={sumEvenNumbers}>Sum of Even Numbers (10-30)</button>
-          <br></br>
-          <button onClick={() => setOutput(celsiusToFahrenheit(25))}>Convert 25°C to Fahrenheit</button>
-          <br></br>
-          <button onClick={() => setOutput(fahrenheitToCelsius(77))}>Convert 77°F to Celsius</button>
-          <br></br>
-          <button onClick={() => setOutput(sumArray([1, 2, 3, 4]))}>Sum of Array [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(averageArray([1, 2, 3, 4]))}>Average of Array [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(filterPositiveNumbers([-1, 2, -3, 4]))}>Filter Positive Numbers [-1, 2, -3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(findMax([1, 2, 3, 4]))}>Find Max in Array [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(printFibonacci().join(', '))}>First 10 Fibonacci Numbers</button>
-          <br></br>
-          <button onClick={() => setOutput(fibonacci(10))}>10th Fibonacci Number</button>
-          <br></br>
-          <button onClick={handleIsPrime}>Is Number Prime (11)</button>
-          <br></br>
+      <div className="section">
+        <h3>First 100 Primes Sum</h3>
+        <button onClick={handlePrimeSum}>Calculate Prime Sum</button>
+      </div>
 
-          <button onClick={() => setOutput(sumOfDigits(1234))}>Sum of Digits (1234)</button>
-          <br></br>
-          <button onClick={() => setOutput(printPrimes().join(', '))}>First 100 Prime Numbers</button>
-          <br></br>
-          <button onClick={() => setOutput(primesGreaterThan(10, 5).join(', '))}>First 5 Primes Greater Than 10</button>
-          <br></br>
-          <button onClick={() => setOutput(rotateLeft([1, 2, 3, 4]).join(', '))}>Rotate Array Left [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(rotateRight([1, 2, 3, 4]).join(', '))}>Rotate Array Right [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(reverseArray([1, 2, 3, 4]).join(', '))}>Reverse Array [1, 2, 3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(reverseString('hello'))}>Reverse String 'hello'</button>
-          <br></br>
-          <button onClick={() => setOutput(mergeArrays([1, 2], [3, 4]).join(', '))}>Merge Arrays [1, 2] and [3, 4]</button>
-          <br></br>
-          <button onClick={() => setOutput(symmetricDifference([1, 2, 3], [3, 4, 5]).join(', '))}>Symmetric Difference [1, 2, 3] and [3, 4, 5]</button>
-          <br></br>
-          <button onClick={() => setOutput(difference([1, 2, 3], [2, 3, 4]).join(', '))}>Difference [1, 2, 3] and [2, 3, 4]</button>
-          <br></br>
-        </div>
-        <pre>{output}</pre>
-      </header>
+      <div className="section">
+        <h3>Add Large Numbers</h3>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter two large numbers separated by comma"
+        />
+        <button onClick={handleLargeAddition}>Add Large Numbers</button>
+      </div>
+
+      <div className="section">
+        <h3>Word Count</h3>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter text"
+        />
+        <button onClick={handleWordCount}>Count Words</button>
+      </div>
+
+      <div className="section">
+        <h3>Capitalize Words</h3>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter text"
+        />
+        <button onClick={handleCapitalizeWords}>Capitalize</button>
+      </div>
+
+      <div className="section">
+        <h3>Sum Comma Delimited Numbers</h3>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter numbers separated by commas"
+        />
+        <button onClick={handleCommaSum}>Calculate Sum</button>
+      </div>
+
+      <div className="result-section">
+        <h3>Result</h3>
+        <p>{result}</p>
+      </div>
     </div>
   );
 }
